@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>£25 Quiz Game - Elite Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Elite Apple-style black theme */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #000;
+    color: #fff;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .page {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    text-align: center;
+    width: 90%;
+    max-width: 600px;
+  }
+  .page.active {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  h1 {
+    font-weight: 700;
+    font-size: 3em;
+    margin-bottom: 40px;
+    text-shadow: 0 0 20px rgba(255,255,255,0.2);
+    letter-spacing: 0.03em;
+  }
+  p {
+    font-weight: 400;
+    font-size: 1.2em;
+    margin-bottom: 40px;
+    color: #bbb;
+  }
+  button {
+    padding: 18px 60px;
+    margin: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #000;
+    background: linear-gradient(145deg, #0af, #3ff);
+    border: none;
+    border-radius: 36px;
+    cursor: pointer;
+    box-shadow: 0 16px 32px rgba(0,0,0,0.4);
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  button:hover {
+    transform: translateY(-6px) scale(1.08);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  }
+  button:active {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.05) 0%, transparent 80%);
+    z-index: -1;
+    pointer-events: none;
+  }
+  button:focus { outline: none; }
+  @media (max-width: 500px) {
+    h1 { font-size: 2.2em; }
+    button { padding: 14px 40px; font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="attempted" class="page">
+  <h1>You've already attempted this quiz!</h1>
+  <button onclick="resetAttempt()">Reset for this device</button>
+</div>
+
+<div id="start" class="page">
+  <h1>Welcome to the £25 Quiz Game</h1>
+  <button onclick="nextPage('guess')">Start</button>
+</div>
+
+<div id="guess" class="page">
+  <h1>Guess what?</h1>
+  <button onclick="nextPage('ifYouGuess')">Tap to continue</button>
+</div>
+
+<div id="ifYouGuess" class="page">
+  <h1>If you guess this right</h1>
+  <button onclick="nextPage('winPrize')">Tap to continue</button>
+</div>
+
+<div id="winPrize" class="page">
+  <h1>You'll get £25</h1>
+  <button onclick="nextPage('q1')">Tap to continue</button>
+</div>
+
+<div id="q1" class="page">
+  <h1>Question 1: Am I unc?</h1>
+  <button onclick="answerQ1('A')">A: yes ur so old like dont u have friends ur age</button><br>
+  <button onclick="answerQ1('B')">B: no you are youthful and awesome and i seynab am a loser</button><br>
+  <button onclick="answerQ1('C')">C: lowkey u should just pack it up</button><br>
+  <button onclick="answerQ1('D')">D: you are perfect, not too old nor too young</button>
+</div>
+
+<div id="q1Correct" class="page">
+  <h1>i just tricked your ass, u aint gettin shit 😂</h1>
+</div>
+
+<div id="q1Wrong" class="page">
+  <h1>Very very sad, you have lost...</h1>
+  <button onclick="nextPage('retry')">Tap to continue</button>
+</div>
+
+<div id="retry" class="page">
+  <h1>Should I give you another chance?</h1>
+  <button onclick="nextPage('q2')">Yes</button>
+  <button onclick="gameOver()">No</button>
+</div>
+
+<div id="q2" class="page">
+  <h1>Question 2: How tall is senyab?</h1>
+  <button onclick="answerQ2('A')">A: 6'6</button><br>
+  <button onclick="answerQ2('B')">B: 5'1</button><br>
+  <button onclick="answerQ2('C')">C: 5'7</button><br>
+  <button onclick="answerQ2('D')">D: 3'0</button>
+</div>
+
+<div id="q2Correct" class="page">
+  <h1>i just tricked your ass, u aint gettin shit 😂</h1>
+</div>
+
+<div id="gameOver" class="page">
+  <h1>Game Over</h1>
+  <p>Better luck next time!</p>
+</div>
+
+<script>
+function showPage(pageId) {
+  const pages = document.querySelectorAll('.page');
+  pages.forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+}
+function nextPage(pageId) { showPage(pageId); }
+function answerQ1(answer) {
+  localStorage.setItem('attempted', 'true');
+  if(answer === 'B') { nextPage('q1Correct'); } else { nextPage('q1Wrong'); }
+}
+function answerQ2(answer) {
+  if(answer === 'B') { nextPage('q2Correct'); } else { nextPage('gameOver'); }
+}
+function gameOver() { nextPage('gameOver'); }
+function resetAttempt() { localStorage.removeItem('attempted'); showPage('start'); }
+if(localStorage.getItem('attempted')) { showPage('attempted'); } else { showPage('start'); }
+</script>
+
+</body>
+</html>
